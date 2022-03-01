@@ -113,10 +113,15 @@ See \build\html\index.html
 
 ## TODO list
 
+5). `DataExplorer` in `core` need further work
+
 6). only tested in Windows. probably need some change in the `config` module when used in other systems
 
 7). a proper testing module
 
 12). logging across thread/multiprocess
 
-13). `Speaker` in the `utilities` need to be overhauled
+13). `Speaker` in the `utilities` need to be overhauled; integrate it with `SpeakerCalibration_config` in the `config` 
+module
+
+14). work on and test the GUI version of everything
