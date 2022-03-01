@@ -1,0 +1,34 @@
+Subject management
+=======================================
+
+The subject of different experiments are managed at two levels:
+
+    1. A cohort stores all subjects that belongs to one complete experiment
+
+    2. Individual subjects, store information about one specific subject
+
+The `labplatform.core.subject` module implements different classes and functions to perform the management task. The
+`Subject` class corresponds to individual subjects, and the `SubjectList` class corresponds to different cohorts. Each
+cohort can be (and should be in case of animals) saved to a .h5 file; the location of the file can be set with the
+`SUBJECT_ROOT` setting (see :doc:`GlobalSetting`).
+
+The module also has different functions to manage cohorts::
+
+    from labplatform.core import Subject, get_cohort_names, load_cohort, create_cohort
+
+    # get the names of existing cohort files
+    cohort_names = get_cohort_names()
+    # load one cohort; loaded data will be put in a SubjectList instance
+    coh = load_cohort(cohort_names[0])
+    # or, create a new cohort
+    coh_new = create_cohort('test_new')
+
+    # create a new subject and add it into the new cohort
+    sub_new = Subject(name='Mouse_1', group='control', species='Mouse')
+    coh_new.add_subject(sub_new)
+    # when adding a subject to a cohort, the subject will get the name of the cohort
+    # the .h5 is also automatically updated when adding a new subject
+
+When not specified, the newly created subject inherits default values for all parameters except 'name' and 'group',
+which must always be specified manually. Inside a cohort the combination of `name` and `group` must be unique. Currently
+deleting a subject from a cohort is not supported (but can still be done manually).

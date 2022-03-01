@@ -1,0 +1,4 @@
+ExperimentData
+=======================================
+
+.. autoclass:: labplatform.core.Data.ExperimentData

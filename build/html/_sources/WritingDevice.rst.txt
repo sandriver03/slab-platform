@@ -1,0 +1,180 @@
+How to write a Device subclass
+=======================================
+
+Writing DeviceSetting subclass
+-----------------------------------
+
+A device class should have a (subclass of) DeviceSetting (see :doc:`_Core_classes/Setting`) to hold all the parameters.
+See :doc:`WritingSetting` for how to write a setting subclass. Below is an example::
+
+    from labplatform.core import DeviceSetting
+    from traits.api import Int, Instance, Float, Any, Property, Str, CInt
+
+
+    class FooDeviceSetting(DeviceSetting):
+
+        # define parameters
+        sampling_freq = Int(1000, group='primary', dsec='number of data points per channel per second. (Hz)')
+        n_channel     = CInt(16, group='primary', dsec='number of channels; each channel generates one stream '
+                                                  'of random numbers')
+        buffer_size   = CInt(10, group='primary', dsec='buffer size; numbers of data chunk. One control interval '
+                                                  'generates one data chunk')
+        mu            = Float(1, group='primary', dsec='mean of the random numbers', context=False)
+        sigma         = Float(1, group='primary', dsec='std of the random numbers', context=False)
+        timer_interval = Float(0.5, group='primary', dsec='interval at which data chunks are generated')
+        data_length   = CInt(-1, group='primary', dsec='if positive, the device will stop after reaching the '
+                                                  'desired length. otherwise it runs indefinitely')
+
+        buffer_length = Property(CInt, group='derived', depends_on=['sampling_freq', 'buffer_size',
+                                              'timer_interval', 'data_length'],
+                             dsec='length of internal buffer required')
+        chunk_size = Property(Int, group='derived', depends_on=['sampling_freq', 'timer_interval'],
+                          dsec='number of data point generated per timer interval')
+
+        device_type = 'FooDevice'
+
+        # this is how the `Property` traits are set. Refer to Traits package for details
+        def _get_buffer_length(self):
+            if self.data_length <= 0:
+                return int(self.timer_interval * self.sampling_freq * self.buffer_size)
+            else:
+                return self.data_length
+
+        def _get_chunk_size(self):
+            return int(self.timer_interval * self.sampling_freq)
+
+
+Writing Device subclass
+-----------------------------------
+
+Generally speaking, we need to implement those operating methods (see :doc:`Basics`). A device class is relatively
+simple, as there is no other methods than those basic ones listed.
+
+Here, we are going to write a `simulated` Gaussian random number generator called `FooDevice`. The setting class we
+already wrote above. When running, this device will generate n streams of Gaussian random numbers defined by parameter
+`n_channel`. The mean and std of the random number can be set through `mu` and `sigma`. Notice that those two parameters
+have `contex=False` metadata, which means that they can be modified while the device is running, and modifying them
+will not cause a re-initialization of the device. Other `primary` parameters have `context=True` by default.
+
+
+First, import all the necessary packages::
+
+    from labplatform.core import DeviceSetting, Device
+
+    import numpy as np
+    import queue
+    from traits.api import Int, Instance, Float, Any, Property, Str, CInt
+    from PyQt4.QtCore import QTimer
+    import time
+    import threading
+
+    import logging
+    log = logging.getLogger(__name__)
+
+Start writing the FooDevice by subclassing the Device class::
+
+    class FooDevice(Device):
+
+    """
+    generate streams of Gaussian random numbers when run
+    """
+
+        # we need to simulate buffer in the RAM, since it is a simulated device
+        buffer        = Any(dsec='internal buffer, must have `buffer.shape[0] == nb_channel`.')
+        buffer_widx   = Int(0, dsec='write index of the buffer')
+        buffer_ridx   = Int(0, dsec='read index of the buffer')
+
+        # setting class used will be the new FooDeviceSetting class
+        setting = Instance(FooDeviceSetting, ())
+
+        # here we want to use the default thread
+        _use_default_thread = True
+
+The variable `_output_specs` is very important to correctly configure, since the `ExperimentLogic` class will use it to
+prepare data storage. When only one output is generated, the variable should be a dictionary with the following fields:
+
+- `type`: string, the nature of the signal
+- `shape`: tuple, the shape of the signal. Growing dimension is labeled with 0. only one growing dimension is allowed.
+- `sampling_freq`: float
+- `dtype`: np.dtype. Data type of the signal
+- `length`: int. If 0 is entered, then it is estimated from `trial_duration` and `sampling_freq`
+- `name`: string, optional. What name the signal should be saved in the data file.
+
+If multiple outputs are present, then `_output_specs` should be a dictionary of dictionaries, in which each member
+dictionary specifies one output as stated above. In this case, the `name` field is required and has to be unique.
+
+For the FooDevice, it only give one output, so the `_output_specs` looks like this::
+
+    _output_specs = {'type': 'analog_signal', 'shape':(0, 16), 'sampling_freq': 1000,
+                     'dtype': float, 'length': 0}
+
+Next, override the necessary operating methods (see :doc:`Basics`). Here we only need to write a new `_initialize`
+method along with the data generating code, which will be ran on the default thread. The running of the device only
+needs correctly configured buffer and thread. The former will be setup in the `_initialize` method, and the latter will
+be written in the `thread_func` method. The default thread will automatically setup and run the `thread_func`.
+
+The `_initialize` method will look like this::
+
+    def _initialize(self, **kwargs):
+        # set up timer (not in use in this case)
+        # self.configure_timer(**kwargs)
+        self.buffer_ridx, self.buffer_widx = 0, 0
+        # prepare internal buffer
+        self.buffer = np.empty([int(self.setting.buffer_length), self.setting.n_channel],
+                               dtype=self._output_specs['dtype'])
+        # save output specs
+        self._output_specs['shape'] = (0, self.setting.n_channel)
+        self._output_specs['sampling_freq'] = self.setting.sampling_freq
+
+        # creating and starting the default thread will be handled by the superclass
+
+We are not really interacting with a real hardware, so the method `_configure()` do not need to do anything::
+
+    def _configure(self, **kwargs):
+        pass
+
+We still need to override other "do nothing" methods as well, otherwise a `NotImplementedError` will be raised::
+
+    def _start(self):
+        pass
+
+    def _pause(self):
+        pass
+
+    def _stop(self):
+        pass
+
+Finally, override the `thread_func` and use it to generate data on the default thread::
+
+    def thread_func(self):
+        time_track = time.time()
+        '''
+        log.debug('write index before data generation: {} out of total {}'
+                .format(self.buffer_widx, self.setting.buffer_length))
+        '''
+
+        self.buffer_widx = self.buffer_widx%self.setting.buffer_length
+        data = self.setting.mu + self.setting.sigma * \
+                    np.random.randn(self.setting.chunk_size, self.setting.n_channel)
+        self.buffer[self.buffer_widx:(self.buffer_widx+self.setting.chunk_size), :] = data
+        self.buffer_widx += self.setting.chunk_size
+
+        '''
+        log.debug('write index after data generation: {} out of total'.
+            format(self.buffer_widx, self.setting.buffer_length))
+        '''
+
+        if self.setting.data_length > 0:
+            self.stop_at_datalength()
+
+        exec_time = time.time() - time_track
+        time.sleep(self.setting.timer_interval-exec_time)
+
+    def stop_at_datalength(self):
+        # if `data_length` is set, pause the device once it is reached
+        if self.buffer_widx >= self.setting.data_length:
+            self.pause()
+            if self.experiment:
+                self.experiment.process_event({'trial_stop': 0})  # calling the `process_event` method on ExperimentLogic class
+
+See `FooDevice` under **Devices** folder for the entire class.

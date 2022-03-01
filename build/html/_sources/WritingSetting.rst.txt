@@ -1,0 +1,41 @@
+How to write Setting subclass
+=======================================
+
+:doc:`_Core_classes/Setting` class holds configurable parameters used for the experiment or device controller. All the
+parameters you want to interact through the configure() method should be defined here.
+
+There are two pre-defined subclass: ExperimentSetting class and DeviceSetting class.
+
+Parameters are defined with traits package. Each parameter should have the following metadata attributes:
+
+        `editable`: boolean, if this parameter can be edited through GUI; default is True for primary parameters, and
+        False for other type of parameters
+
+        `group`: string with value `primary`, `derived` or `status`. Only `primary` parameters could be editable.
+        `derived` parameters are those intermediate parameters calculated from primaries. `Status` parameters are used
+        to indicate experiment status.
+
+        `dsec`:     string describing what this parameter is (please specify unit!)
+
+        `context`:  bool, used to indicate if parameter change should triggers re-initialize action in the program. Value
+        change in a parameter with `context=True` will trigger re-initialization. Also, parameters with `context=True`
+        cannot be modified when the state of the Logic is 'Running'. By default, `primary` parameters has `context=True`.
+        For other group of variables this metadata has no use.
+
+Here is an example::
+
+    from labplatform.core import DeviceSetting
+    from traits.api import CFloat, CInt, Str, Any, Instance
+
+    class RX8_Ole_Setting(DeviceSetting):
+        """
+        setting for a RX8 player device
+        """
+        sampling_freq = CFloat(48288.125, group='primary', dsec='sampling frequency of the device (Hz)')
+        buffer_size_max = CInt(50000, group='status', dsec='buffer size cannot be larger than this')
+        rx8_file       = Str('RCX\\play_mono.rcx', group='primary', dsec='name of the rcx file to load')
+        processor      = Str('RX8', group='status', dsec='name of the processor')
+        connection     = Str('GB', group='status', dsec='')
+        index          = CInt(1, group='primary', dsec='index of the device to connect to')
+        stimulus       = Any(group='primary', dsec='stimulus to play', context=False)
+        channel_nr     = CInt(1, group='primary', dsec='channel to play sound', context=False)

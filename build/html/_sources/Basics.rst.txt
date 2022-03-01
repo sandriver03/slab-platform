@@ -1,0 +1,77 @@
+Basics about the Logic class
+=======================================
+
+:doc:`_Core_classes/Logic` is the base class for both the :doc:`_Core_classes/ExperimentLogic` and
+:doc:`_Core_classes/Device` class. You mostly will not directly use this class, but it is important to know some basics
+about this class.
+
+Generally, a Logic class will have these variables:
+
+    - :doc:`_Core_classes/Setting`: the parameters of the class that can be interacted with
+
+    - model: a handle to the class instance itself
+
+    - state: the internal state of the class
+
+The methods can be roughly divided into these categories:
+
+    - **state-related**: these methods either change or query about the state of the logic. Mostly you don't need to modify them.
+
+        - change_state()
+        - initialized()
+        - configured()
+        - running()
+        - paused()
+        - stopped()
+
+    - **operating methods**: these methods are important to operate the Logic, thus you need to implement them when subclassing.
+
+        - initialize() `setup the Logic, load circuits, prepare buffer etc`
+        - configure() `modify parameters defined in setting class, commit parameter changes to hardware`
+        - start()
+        - pause()
+        - stop()
+        - reset()  `mostly likely no need to change`
+        - revert()  `mostly likely no need to change`
+        - thread_func()  in general, all blocking actions should be put here
+
+        For the first 5 methods, the state and parameter modification functionality is already implemented. That is, you
+        can already use them to change state of the Logic as well as configure the parameters defined in the Setting
+        class. When subclassing, you only need to implement operations such as loading circuits into hardware, preparing
+        buffer etc. Do not change those methods directly (in most cases); rather, implementing corresponding private
+        methods, i.e. _initialize(), _configure(), _start() and so on.
+
+    - **validation methods**: these methods are used to validate parameters/state of the logic etc.
+
+        - configure_validation()
+        - setting_updated()
+        - check_input_specs()
+        - check_output_specs()
+        - ...
+
+    - **helper methods**: these methods normally are not directly used. Most time you don't need to worried about them.
+
+        - apply()
+        - thread_run()
+        - init()
+        - close()
+        - handle_parameter_change()
+        - ...
+
+In summary, mostly you only need to override/implement the operating related methods when subclassing.
+
+
+Using the class
+----------------------------------
+
+When using these classes, you should (ideally) only use methods `initialize`, `configure`, `start`, `pause`, `reset`,
+`revert` and `stop`. All other methods should not be needed to either operate the device or run the experiment.
+
+
+About the default thread
+----------------------------------
+
+By default, if the internal flag `_use_default_thread` is set to True, a daemon thread will be setup. The thread is
+controlled by the state of the Logic: it is alive until the Logic is stopped, and the function `thread_func()` will be
+executed as long as the state of the Logic is `Running`.
+

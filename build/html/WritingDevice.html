@@ -1,0 +1,303 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>How to write a Device subclass &#8212; LabPlatform 0.9.0_alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to write an ExperimentLogic subclass" href="WritingExperimentLogic.html" />
+    <link rel="prev" title="How to write Setting subclass" href="WritingSetting.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="how-to-write-a-device-subclass">
+<h1>How to write a Device subclass<a class="headerlink" href="#how-to-write-a-device-subclass" title="Permalink to this headline">¶</a></h1>
+<section id="writing-devicesetting-subclass">
+<h2>Writing DeviceSetting subclass<a class="headerlink" href="#writing-devicesetting-subclass" title="Permalink to this headline">¶</a></h2>
+<p>A device class should have a (subclass of) DeviceSetting (see <a class="reference internal" href="_Core_classes/Setting.html"><span class="doc">Setting</span></a>) to hold all the parameters.
+See <a class="reference internal" href="WritingSetting.html"><span class="doc">How to write Setting subclass</span></a> for how to write a setting subclass. Below is an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">labplatform.core</span> <span class="kn">import</span> <span class="n">DeviceSetting</span>
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="n">CInt</span>
+
+
+<span class="k">class</span> <span class="nc">FooDeviceSetting</span><span class="p">(</span><span class="n">DeviceSetting</span><span class="p">):</span>
+
+    <span class="c1"># define parameters</span>
+    <span class="n">sampling_freq</span> <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;number of data points per channel per second. (Hz)&#39;</span><span class="p">)</span>
+    <span class="n">n_channel</span>     <span class="o">=</span> <span class="n">CInt</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;number of channels; each channel generates one stream &#39;</span>
+                                              <span class="s1">&#39;of random numbers&#39;</span><span class="p">)</span>
+    <span class="n">buffer_size</span>   <span class="o">=</span> <span class="n">CInt</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;buffer size; numbers of data chunk. One control interval &#39;</span>
+                                              <span class="s1">&#39;generates one data chunk&#39;</span><span class="p">)</span>
+    <span class="n">mu</span>            <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;mean of the random numbers&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">sigma</span>         <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;std of the random numbers&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">timer_interval</span> <span class="o">=</span> <span class="n">Float</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;interval at which data chunks are generated&#39;</span><span class="p">)</span>
+    <span class="n">data_length</span>   <span class="o">=</span> <span class="n">CInt</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;if positive, the device will stop after reaching the &#39;</span>
+                                              <span class="s1">&#39;desired length. otherwise it runs indefinitely&#39;</span><span class="p">)</span>
+
+    <span class="n">buffer_length</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="n">CInt</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;derived&#39;</span><span class="p">,</span> <span class="n">depends_on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sampling_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;buffer_size&#39;</span><span class="p">,</span>
+                                          <span class="s1">&#39;timer_interval&#39;</span><span class="p">,</span> <span class="s1">&#39;data_length&#39;</span><span class="p">],</span>
+                         <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;length of internal buffer required&#39;</span><span class="p">)</span>
+    <span class="n">chunk_size</span> <span class="o">=</span> <span class="n">Property</span><span class="p">(</span><span class="n">Int</span><span class="p">,</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;derived&#39;</span><span class="p">,</span> <span class="n">depends_on</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;sampling_freq&#39;</span><span class="p">,</span> <span class="s1">&#39;timer_interval&#39;</span><span class="p">],</span>
+                      <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;number of data point generated per timer interval&#39;</span><span class="p">)</span>
+
+    <span class="n">device_type</span> <span class="o">=</span> <span class="s1">&#39;FooDevice&#39;</span>
+
+    <span class="c1"># this is how the `Property` traits are set. Refer to Traits package for details</span>
+    <span class="k">def</span> <span class="nf">_get_buffer_length</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_length</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer_interval</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_size</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data_length</span>
+
+    <span class="k">def</span> <span class="nf">_get_chunk_size</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">timer_interval</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampling_freq</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="writing-device-subclass">
+<h2>Writing Device subclass<a class="headerlink" href="#writing-device-subclass" title="Permalink to this headline">¶</a></h2>
+<p>Generally speaking, we need to implement those operating methods (see <a class="reference internal" href="Basics.html"><span class="doc">Basics about the Logic class</span></a>). A device class is relatively
+simple, as there is no other methods than those basic ones listed.</p>
+<p>Here, we are going to write a <cite>simulated</cite> Gaussian random number generator called <cite>FooDevice</cite>. The setting class we
+already wrote above. When running, this device will generate n streams of Gaussian random numbers defined by parameter
+<cite>n_channel</cite>. The mean and std of the random number can be set through <cite>mu</cite> and <cite>sigma</cite>. Notice that those two parameters
+have <cite>contex=False</cite> metadata, which means that they can be modified while the device is running, and modifying them
+will not cause a re-initialization of the device. Other <cite>primary</cite> parameters have <cite>context=True</cite> by default.</p>
+<p>First, import all the necessary packages:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">labplatform.core</span> <span class="kn">import</span> <span class="n">DeviceSetting</span><span class="p">,</span> <span class="n">Device</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">queue</span>
+<span class="kn">from</span> <span class="nn">traits.api</span> <span class="kn">import</span> <span class="n">Int</span><span class="p">,</span> <span class="n">Instance</span><span class="p">,</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Property</span><span class="p">,</span> <span class="n">Str</span><span class="p">,</span> <span class="n">CInt</span>
+<span class="kn">from</span> <span class="nn">PyQt4.QtCore</span> <span class="kn">import</span> <span class="n">QTimer</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">threading</span>
+
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Start writing the FooDevice by subclassing the Device class:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">FooDevice</span><span class="p">(</span><span class="n">Device</span><span class="p">):</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">generate streams of Gaussian random numbers when run</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+    <span class="c1"># we need to simulate buffer in the RAM, since it is a simulated device</span>
+    <span class="n">buffer</span>        <span class="o">=</span> <span class="n">Any</span><span class="p">(</span><span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;internal buffer, must have `buffer.shape[0] == nb_channel`.&#39;</span><span class="p">)</span>
+    <span class="n">buffer_widx</span>   <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;write index of the buffer&#39;</span><span class="p">)</span>
+    <span class="n">buffer_ridx</span>   <span class="o">=</span> <span class="n">Int</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;read index of the buffer&#39;</span><span class="p">)</span>
+
+    <span class="c1"># setting class used will be the new FooDeviceSetting class</span>
+    <span class="n">setting</span> <span class="o">=</span> <span class="n">Instance</span><span class="p">(</span><span class="n">FooDeviceSetting</span><span class="p">,</span> <span class="p">())</span>
+
+    <span class="c1"># here we want to use the default thread</span>
+    <span class="n">_use_default_thread</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>The variable <cite>_output_specs</cite> is very important to correctly configure, since the <cite>ExperimentLogic</cite> class will use it to
+prepare data storage. When only one output is generated, the variable should be a dictionary with the following fields:</p>
+<ul class="simple">
+<li><p><cite>type</cite>: string, the nature of the signal</p></li>
+<li><p><cite>shape</cite>: tuple, the shape of the signal. Growing dimension is labeled with 0. only one growing dimension is allowed.</p></li>
+<li><p><cite>sampling_freq</cite>: float</p></li>
+<li><p><cite>dtype</cite>: np.dtype. Data type of the signal</p></li>
+<li><p><cite>length</cite>: int. If 0 is entered, then it is estimated from <cite>trial_duration</cite> and <cite>sampling_freq</cite></p></li>
+<li><p><cite>name</cite>: string, optional. What name the signal should be saved in the data file.</p></li>
+</ul>
+<p>If multiple outputs are present, then <cite>_output_specs</cite> should be a dictionary of dictionaries, in which each member
+dictionary specifies one output as stated above. In this case, the <cite>name</cite> field is required and has to be unique.</p>
+<p>For the FooDevice, it only give one output, so the <cite>_output_specs</cite> looks like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">_output_specs</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;analog_signal&#39;</span><span class="p">,</span> <span class="s1">&#39;shape&#39;</span><span class="p">:(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">16</span><span class="p">),</span> <span class="s1">&#39;sampling_freq&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                 <span class="s1">&#39;dtype&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>Next, override the necessary operating methods (see <a class="reference internal" href="Basics.html"><span class="doc">Basics about the Logic class</span></a>). Here we only need to write a new <cite>_initialize</cite>
+method along with the data generating code, which will be ran on the default thread. The running of the device only
+needs correctly configured buffer and thread. The former will be setup in the <cite>_initialize</cite> method, and the latter will
+be written in the <cite>thread_func</cite> method. The default thread will automatically setup and run the <cite>thread_func</cite>.</p>
+<p>The <cite>_initialize</cite> method will look like this:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_initialize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="c1"># set up timer (not in use in this case)</span>
+    <span class="c1"># self.configure_timer(**kwargs)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">buffer_ridx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_widx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+    <span class="c1"># prepare internal buffer</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">buffer_length</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">n_channel</span><span class="p">],</span>
+                           <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_output_specs</span><span class="p">[</span><span class="s1">&#39;dtype&#39;</span><span class="p">])</span>
+    <span class="c1"># save output specs</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_output_specs</span><span class="p">[</span><span class="s1">&#39;shape&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">n_channel</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">_output_specs</span><span class="p">[</span><span class="s1">&#39;sampling_freq&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">sampling_freq</span>
+
+    <span class="c1"># creating and starting the default thread will be handled by the superclass</span>
+</pre></div>
+</div>
+<p>We are not really interacting with a real hardware, so the method <cite>_configure()</cite> do not need to do anything:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_configure</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>We still need to override other “do nothing” methods as well, otherwise a <cite>NotImplementedError</cite> will be raised:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_start</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">_pause</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">_stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>Finally, override the <cite>thread_func</cite> and use it to generate data on the default thread:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">thread_func</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">time_track</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    log.debug(&#39;write index before data generation: {} out of total {}&#39;</span>
+<span class="sd">            .format(self.buffer_widx, self.setting.buffer_length))</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">buffer_widx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_widx</span><span class="o">%</span><span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">buffer_length</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">mu</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">sigma</span> <span class="o">*</span> \
+                <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">chunk_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">n_channel</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">buffer</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer_widx</span><span class="p">:(</span><span class="bp">self</span><span class="o">.</span><span class="n">buffer_widx</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">chunk_size</span><span class="p">),</span> <span class="p">:]</span> <span class="o">=</span> <span class="n">data</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">buffer_widx</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">chunk_size</span>
+
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    log.debug(&#39;write index after data generation: {} out of total&#39;.</span>
+<span class="sd">        format(self.buffer_widx, self.setting.buffer_length))</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">data_length</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stop_at_datalength</span><span class="p">()</span>
+
+    <span class="n">exec_time</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">time_track</span>
+    <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">timer_interval</span><span class="o">-</span><span class="n">exec_time</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">stop_at_datalength</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># if `data_length` is set, pause the device once it is reached</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">buffer_widx</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">data_length</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pause</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment</span><span class="o">.</span><span class="n">process_event</span><span class="p">({</span><span class="s1">&#39;trial_stop&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">})</span>  <span class="c1"># calling the `process_event` method on ExperimentLogic class</span>
+</pre></div>
+</div>
+<p>See <cite>FooDevice</cite> under <strong>Devices</strong> folder for the entire class.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LabPlatform</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Table of Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GlobalSettings.html">Global configurations for the <cite>labplatform</cite> package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubjectManagement.html">Subject management</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Getting_Started.html">Getting started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Basics.html">Basics about the Logic class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WritingSetting.html">How to write Setting subclass</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How to write a Device subclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WritingExperimentLogic.html">How to write an ExperimentLogic subclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Examples/Foo.html">Simple Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Package_content.html">Package organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Note.html">Note and ToDo list</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Logic.html">Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/ExperimentLogic.html">ExperimentLogic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Device.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/ExperimentData.html">ExperimentData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Setting.html">Setting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/subject.html">subject</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/subject.html#how-to-use-the-subject-class">How to use the subject class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Getting_Started.html">Getting started</a><ul>
+      <li>Previous: <a href="WritingSetting.html" title="previous chapter">How to write Setting subclass</a></li>
+      <li>Next: <a href="WritingExperimentLogic.html" title="next chapter">How to write an ExperimentLogic subclass</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Chao Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/WritingDevice.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

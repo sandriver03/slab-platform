@@ -1,0 +1,24 @@
+Getting started
+=======================================
+
+There are two main parts to prepare for an experiment:
+
+    1. A controller to control the experiment flow
+
+    2. A (series of) controller to interact with hardware used in the experiment
+
+For the experiment controller, you need to write a subclass of the :doc:`_Core_classes/ExperimentLogic` class. For
+device controllers, subclassing the :doc:`_Core_classes/Device` class. Both of these classes use the
+:doc:`_Core_classes/Setting` class to configure parameters involved; the experiment controller (subclass of
+:doc:`_Core_classes/ExperimentLogic`) will also use the :doc:`_Core_classes/ExperimentData` class to save data to hard
+drive.
+
+Currently, the :doc:`_Core_classes/ExperimentData` class prepares data file in HDF5 format.
+
+.. toctree::
+
+    Basics
+    WritingSetting
+    WritingDevice
+    WritingExperimentLogic
+    Examples/Foo

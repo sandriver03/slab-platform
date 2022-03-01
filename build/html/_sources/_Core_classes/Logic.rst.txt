@@ -1,0 +1,4 @@
+Logic
+=======================================
+
+.. autoclass:: labplatform.core.Logic.Logic

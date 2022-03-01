@@ -1,0 +1,54 @@
+Package organization
+=======================================
+
+The whole program folder is organized in to different sub-folders:
+
+.. _PackageContent_Config-reference-label:
+
+config
+---------------------------------------
+
+global settings used across the platform; e.g. file system, date/time format etc
+
+    On windows, default path is C:\\labplatform. It is put this way so that the path is user-independent (but not
+    convenient as on Desktop)
+
+    On Mac/Linx, default path is ~user/labplatform. Probably a bad idea since it is user specific
+
+core
+---------------------------------------
+
+Important base components of the platform, including:
+
+    **Data**: class handling data operation in experiment
+            #ToDo: right now all data channels are the same type (either RAM or File).
+            Should allow different type of backend to be used for each channel
+
+        - Writer: (continuously and syn/asynchronously) write data into storage
+
+    **Logic**: controller class handling experiment/device as well as GUI interaction
+
+        - Device: base class operating hardware
+
+        - ExperimentLogic: base class operating experiments
+
+    **subject**: class storing all relevant information about experiment subject
+
+    **ToolBar**: GUI interface to different actions perform by Device/ExperimentLogic
+
+GUI
+---------------------------------------
+
+GUI elements, mostly notably (semi)real-time data displays.
+
+stream
+---------------------------------------
+
+Information communication/exchange using sockets. Its purpose is mainly to run inter processes/threads communications
+
+utilities
+---------------------------------------
+
+Helpers, low-level classes and functions generally not directly used when writing new devices and experiments
+
+        channel: interface to RAM buffer and HDF5 storage

@@ -1,0 +1,9 @@
+Makefile
+make.bat
+log.rst
+Lisence.rst
+
+.idea/
+source/
+*/__pycache__/
+*/*/__pycache__/

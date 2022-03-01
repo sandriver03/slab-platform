@@ -1,0 +1,38 @@
+.. LabPlatform documentation master file, created by
+   sphinx-quickstart on Thu Sep  6 15:25:11 2018.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
+
+Welcome to LabPlatform's documentation!
+=======================================
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Table of Contents:
+
+   Environment
+   GlobalSettings
+   SubjectManagement
+   Getting_Started
+   Package_content
+   .. Note
+
+
+.. API References
+   ==================
+   .. toctree::
+      :hidden:
+      :maxdepth: 2
+      _Core_classes/Logic
+      _Core_classes/ExperimentLogic
+      _Core_classes/Device
+      _Core_classes/ExperimentData
+      _Core_classes/Setting
+      _Core_classes/subject
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`

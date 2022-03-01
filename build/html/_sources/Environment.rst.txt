@@ -1,0 +1,7 @@
+Environment
+=======================================
+
+Environment:
+    see `slab_platform_env.yml`
+
+    also see the `README` about how to set everything up.

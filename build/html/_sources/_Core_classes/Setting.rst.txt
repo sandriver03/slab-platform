@@ -1,0 +1,8 @@
+Setting
+=======================================
+
+.. autoclass:: labplatform.core.Setting.Setting
+
+.. autoclass:: labplatform.core.Setting.ExperimentSetting
+
+.. autoclass:: labplatform.core.Setting.DeviceSetting

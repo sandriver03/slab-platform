@@ -1,0 +1,24 @@
+Simple Examples
+=======================================
+
+FooDevice
+-----------------------------------
+
+A simple simulated Gaussian random number generating device. When running, this device will generate n streams of
+Gaussian random numbers defined by parameter n_channel. The mean and std of the random number can be set through mu and
+sigma.
+
+The full code can be found in `FooDevice.py` under **examples/Devices** folder. Run the .py file in your python
+interpreter to play with it.
+
+
+FooExperiment
+-----------------------------------
+
+A simple experiment which uses the FooDevice. It runs multiple trials of fixed length with different Gaussian means,
+collects the data from the FooDevice and save it to hard drive.
+
+The full code can be found in `FooExperiment.py` under **examples/Experiments** folder. Run the .py file in your python
+interpreter to play with it. Before start, put the `example.h5` file under **examples/Data** folder into the .subjects
+folder of the LabPlatform path (you can get it using the `get_config` function from `labplatform.config`, using the key
+`SUBJECT_ROOT`). By default on Windows, the default path will be C:/labplatform.

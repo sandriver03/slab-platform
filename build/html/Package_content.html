@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>Package organization &#8212; LabPlatform 0.9.0_alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Note and ToDo list" href="Note.html" />
+    <link rel="prev" title="Simple Examples" href="Examples/Foo.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="package-organization">
+<h1>Package organization<a class="headerlink" href="#package-organization" title="Permalink to this headline">¶</a></h1>
+<p>The whole program folder is organized in to different sub-folders:</p>
+<section id="config">
+<span id="packagecontent-config-reference-label"></span><h2>config<a class="headerlink" href="#config" title="Permalink to this headline">¶</a></h2>
+<p>global settings used across the platform; e.g. file system, date/time format etc</p>
+<blockquote>
+<div><p>On windows, default path is C:\labplatform. It is put this way so that the path is user-independent (but not
+convenient as on Desktop)</p>
+<p>On Mac/Linx, default path is ~user/labplatform. Probably a bad idea since it is user specific</p>
+</div></blockquote>
+</section>
+<section id="core">
+<h2>core<a class="headerlink" href="#core" title="Permalink to this headline">¶</a></h2>
+<p>Important base components of the platform, including:</p>
+<blockquote>
+<div><dl>
+<dt><strong>Data</strong>: class handling data operation in experiment</dt><dd><blockquote>
+<div><p>#ToDo: right now all data channels are the same type (either RAM or File).
+Should allow different type of backend to be used for each channel</p>
+</div></blockquote>
+<ul class="simple">
+<li><p>Writer: (continuously and syn/asynchronously) write data into storage</p></li>
+</ul>
+</dd>
+</dl>
+<p><strong>Logic</strong>: controller class handling experiment/device as well as GUI interaction</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Device: base class operating hardware</p></li>
+<li><p>ExperimentLogic: base class operating experiments</p></li>
+</ul>
+</div></blockquote>
+<p><strong>subject</strong>: class storing all relevant information about experiment subject</p>
+<p><strong>ToolBar</strong>: GUI interface to different actions perform by Device/ExperimentLogic</p>
+</div></blockquote>
+</section>
+<section id="gui">
+<h2>GUI<a class="headerlink" href="#gui" title="Permalink to this headline">¶</a></h2>
+<p>GUI elements, mostly notably (semi)real-time data displays.</p>
+</section>
+<section id="stream">
+<h2>stream<a class="headerlink" href="#stream" title="Permalink to this headline">¶</a></h2>
+<p>Information communication/exchange using sockets. Its purpose is mainly to run inter processes/threads communications</p>
+</section>
+<section id="utilities">
+<h2>utilities<a class="headerlink" href="#utilities" title="Permalink to this headline">¶</a></h2>
+<p>Helpers, low-level classes and functions generally not directly used when writing new devices and experiments</p>
+<blockquote>
+<div><p>channel: interface to RAM buffer and HDF5 storage</p>
+</div></blockquote>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LabPlatform</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Table of Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GlobalSettings.html">Global configurations for the <cite>labplatform</cite> package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubjectManagement.html">Subject management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Getting_Started.html">Getting started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Package organization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#config">config</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#core">core</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#gui">GUI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#stream">stream</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#utilities">utilities</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Note.html">Note and ToDo list</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Logic.html">Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/ExperimentLogic.html">ExperimentLogic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Device.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/ExperimentData.html">ExperimentData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Setting.html">Setting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/subject.html">subject</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/subject.html#how-to-use-the-subject-class">How to use the subject class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Examples/Foo.html" title="previous chapter">Simple Examples</a></li>
+      <li>Next: <a href="Note.html" title="next chapter">Note and ToDo list</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Chao Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Package_content.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

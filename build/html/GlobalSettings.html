@@ -1,0 +1,141 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>Global configurations for the labplatform package &#8212; LabPlatform 0.9.0_alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Subject management" href="SubjectManagement.html" />
+    <link rel="prev" title="Environment" href="Environment.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="global-configurations-for-the-labplatform-package">
+<h1>Global configurations for the <cite>labplatform</cite> package<a class="headerlink" href="#global-configurations-for-the-labplatform-package" title="Permalink to this headline">¶</a></h1>
+<p>Global configurations are managed by the <cite>config</cite> subpackage. The default settings are defined in .config.settings,
+which includes information such as where to located computer- and user- specific settings, where to find the hardware
+related files (e.g. .rcx files for TDT system), subject cohorts information, where to save data, so on and so forth.
+The package will create corresponding dirs to hold relevant information if the dirs do not exist.</p>
+<p>To load the settings, simply import the subpackage:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">labplatform</span> <span class="kn">import</span> <span class="n">config</span>
+</pre></div>
+</div>
+<p>This will first load the defaults, and then load the jason file <cite>{computername}_{user}_{general}.json</cite> in the setting
+file folder, if available. The information in the jason file is used to update the default settings.</p>
+<p>You can use the <cite>get_config</cite> to check current settings. To modify a setting, use <cite>set_config</cite>. You can save the modified
+configuration environment to a jason file using <cite>save_env_config</cite>, and load the saved configuration with
+‘load_env_config’.</p>
+<p>Most time you do not need to modify/save/load configuration files, in this case you only need the <cite>get_config</cite> function.
+Therefore, you can simply do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">labplatform.config</span> <span class="kn">import</span> <span class="n">get_config</span>
+</pre></div>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LabPlatform</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Table of Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Environment.html">Environment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Global configurations for the <cite>labplatform</cite> package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubjectManagement.html">Subject management</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Getting_Started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Package_content.html">Package organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Note.html">Note and ToDo list</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Logic.html">Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/ExperimentLogic.html">ExperimentLogic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Device.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/ExperimentData.html">ExperimentData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Setting.html">Setting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/subject.html">subject</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/subject.html#how-to-use-the-subject-class">How to use the subject class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="Environment.html" title="previous chapter">Environment</a></li>
+      <li>Next: <a href="SubjectManagement.html" title="next chapter">Subject management</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Chao Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/GlobalSettings.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

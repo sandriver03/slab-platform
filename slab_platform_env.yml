@@ -1,0 +1,23 @@
+name: slab_platform
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.8
+  - ipython
+  - request
+  - pip
+  - traits
+  - traitsui
+  - matplotlib=3.3.4
+  - scipy
+  - numpy
+  - pytables
+  - pyserial
+  - pyzmq
+  - pint
+  - pywin32
+  - pip:
+    - screeninfo
+
+

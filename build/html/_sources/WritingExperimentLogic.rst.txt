@@ -1,0 +1,89 @@
+How to write an ExperimentLogic subclass
+==========================================
+
+An Experiment class need the these component as its internal variables: an ExperimentSetting subclass (see
+:doc:`_Core_classes/Setting`) to hold all configurable parameters, a dictionary of Device subclasses (see
+:doc:`_Core_classes/Device`) to interact with hardware, a :doc:`_Core_classes/subject` instance to know about
+subject information, and a :doc:`_Core_classes/ExperimentData` instance to deal with experiment data.
+
+
+Writing DeviceSetting subclass
+-----------------------------------
+
+See :doc:`WritingSetting` for how to write a setting subclass. Below is an example::
+
+    from labplatform.core import ExperimentSetting
+
+    class FooExperimentSetting(ExperimentSetting):
+        experiment_name = 'FooExp'
+        mu_sequence = List([1, 2], group='primary', context=False, dsec='different means of the Gaussian to run')
+        trial_duration = 5
+        trial_number = 5
+
+
+The ExperimentData class
+-----------------------------------
+
+In most cases, directly using the :doc:`_Core_classes/ExperimentData` class is sufficient. Simply use an instance of the
+class in your experiment.
+
+
+The Devices
+-----------------------------------
+
+See :doc:`WritingDevice` about how to write a device class. Include the devices you want to use in the experiment in a
+dictionary named `devices` in your experiment class::
+
+    devices = {'FooDevice': FooDevice(device_ID=0)}
+
+or, use Traits definition method::
+
+    def _devices_default(self):
+        fd = FooDevice()
+        fd.setting.device_ID = 0
+        return {'FooDevice': fd}
+
+
+The ExperimentLogic class
+-----------------------------------
+
+The same as the device class, you will need to override those operating methods. The experiment controller will be more
+complicated compared with a device controller, as there are more methods to work on in addition to those already present
+in the Device class.
+
+These methods needed to be overridden, even if nothing need to be performed (remember do not override `start`, `pause`
+etc):
+
+    - _initialize()
+    - _configure()
+    - _start()
+    - _pause()
+    - _stop()
+
+Starting an experiment is more complicated compared with starting a device; when starting an experiment, the following
+methods are called:
+
+    `before_start` -> `setup_experiment**` -> `configure_experiment` -> `store_info_when_start` ->`start_experiment**`
+
+and `start_experiment` calls two additional method: `prepare_trial` and `start_trial`. It is setup this way because I
+believe in most cases, our experiment will be trial-based. You might already guessed, there is a `stop_trial` method
+used to stop trials, and a `next_trial` method to start next trial. The `next_trial` method is very simple::
+
+    def next_trial(self):
+        # start next trial
+        # increase trial count
+        self.setting.current_trial += 1
+        # prepare trial
+        self.prepare_trial()
+        # start trial
+        self.start_trial()
+
+The `before_start`, `store_info_when_start` methods are generally universal and you don't need to change it. You will
+certainly need to override the `setup_experiment` method, and the `configure_experiment` method is optional. You also
+need to implement `_prepare_trial`, `_start_trial` and `_stop_trial` methods (again, notice that do not override
+`start_trial` and so on).
+
+Finally, the ExperimentLogic is event-based, so stopping the trial is triggered by an event, which could be generated
+anywhere, as long as you can pass it to the `process_event` method of the ExperimentLogic. In the example experiment
+included (see `FooExperiment` under **Experiments** folder), this is done by the FooDevice: when it generates pre-defined
+amount of data, it calls the `process_event` method of the experiment.

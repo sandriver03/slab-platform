@@ -1,0 +1,212 @@
+
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
+    <title>How to write an ExperimentLogic subclass &#8212; LabPlatform 0.9.0_alpha documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Simple Examples" href="Examples/Foo.html" />
+    <link rel="prev" title="How to write a Device subclass" href="WritingDevice.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="how-to-write-an-experimentlogic-subclass">
+<h1>How to write an ExperimentLogic subclass<a class="headerlink" href="#how-to-write-an-experimentlogic-subclass" title="Permalink to this headline">¶</a></h1>
+<p>An Experiment class need the these component as its internal variables: an ExperimentSetting subclass (see
+<a class="reference internal" href="_Core_classes/Setting.html"><span class="doc">Setting</span></a>) to hold all configurable parameters, a dictionary of Device subclasses (see
+<a class="reference internal" href="_Core_classes/Device.html"><span class="doc">Device</span></a>) to interact with hardware, a <a class="reference internal" href="_Core_classes/subject.html"><span class="doc">subject</span></a> instance to know about
+subject information, and a <a class="reference internal" href="_Core_classes/ExperimentData.html"><span class="doc">ExperimentData</span></a> instance to deal with experiment data.</p>
+<section id="writing-devicesetting-subclass">
+<h2>Writing DeviceSetting subclass<a class="headerlink" href="#writing-devicesetting-subclass" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="WritingSetting.html"><span class="doc">How to write Setting subclass</span></a> for how to write a setting subclass. Below is an example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">labplatform.core</span> <span class="kn">import</span> <span class="n">ExperimentSetting</span>
+
+<span class="k">class</span> <span class="nc">FooExperimentSetting</span><span class="p">(</span><span class="n">ExperimentSetting</span><span class="p">):</span>
+    <span class="n">experiment_name</span> <span class="o">=</span> <span class="s1">&#39;FooExp&#39;</span>
+    <span class="n">mu_sequence</span> <span class="o">=</span> <span class="n">List</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">group</span><span class="o">=</span><span class="s1">&#39;primary&#39;</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">dsec</span><span class="o">=</span><span class="s1">&#39;different means of the Gaussian to run&#39;</span><span class="p">)</span>
+    <span class="n">trial_duration</span> <span class="o">=</span> <span class="mi">5</span>
+    <span class="n">trial_number</span> <span class="o">=</span> <span class="mi">5</span>
+</pre></div>
+</div>
+</section>
+<section id="the-experimentdata-class">
+<h2>The ExperimentData class<a class="headerlink" href="#the-experimentdata-class" title="Permalink to this headline">¶</a></h2>
+<p>In most cases, directly using the <a class="reference internal" href="_Core_classes/ExperimentData.html"><span class="doc">ExperimentData</span></a> class is sufficient. Simply use an instance of the
+class in your experiment.</p>
+</section>
+<section id="the-devices">
+<h2>The Devices<a class="headerlink" href="#the-devices" title="Permalink to this headline">¶</a></h2>
+<p>See <a class="reference internal" href="WritingDevice.html"><span class="doc">How to write a Device subclass</span></a> about how to write a device class. Include the devices you want to use in the experiment in a
+dictionary named <cite>devices</cite> in your experiment class:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">devices</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;FooDevice&#39;</span><span class="p">:</span> <span class="n">FooDevice</span><span class="p">(</span><span class="n">device_ID</span><span class="o">=</span><span class="mi">0</span><span class="p">)}</span>
+</pre></div>
+</div>
+<p>or, use Traits definition method:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">_devices_default</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="n">fd</span> <span class="o">=</span> <span class="n">FooDevice</span><span class="p">()</span>
+    <span class="n">fd</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">device_ID</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">return</span> <span class="p">{</span><span class="s1">&#39;FooDevice&#39;</span><span class="p">:</span> <span class="n">fd</span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+<section id="the-experimentlogic-class">
+<h2>The ExperimentLogic class<a class="headerlink" href="#the-experimentlogic-class" title="Permalink to this headline">¶</a></h2>
+<p>The same as the device class, you will need to override those operating methods. The experiment controller will be more
+complicated compared with a device controller, as there are more methods to work on in addition to those already present
+in the Device class.</p>
+<p>These methods needed to be overridden, even if nothing need to be performed (remember do not override <cite>start</cite>, <cite>pause</cite>
+etc):</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>_initialize()</p></li>
+<li><p>_configure()</p></li>
+<li><p>_start()</p></li>
+<li><p>_pause()</p></li>
+<li><p>_stop()</p></li>
+</ul>
+</div></blockquote>
+<p>Starting an experiment is more complicated compared with starting a device; when starting an experiment, the following
+methods are called:</p>
+<blockquote>
+<div><p><cite>before_start</cite> -&gt; <cite>setup_experiment**</cite> -&gt; <cite>configure_experiment</cite> -&gt; <cite>store_info_when_start</cite> -&gt;`start_experiment**`</p>
+</div></blockquote>
+<p>and <cite>start_experiment</cite> calls two additional method: <cite>prepare_trial</cite> and <cite>start_trial</cite>. It is setup this way because I
+believe in most cases, our experiment will be trial-based. You might already guessed, there is a <cite>stop_trial</cite> method
+used to stop trials, and a <cite>next_trial</cite> method to start next trial. The <cite>next_trial</cite> method is very simple:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">next_trial</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="c1"># start next trial</span>
+    <span class="c1"># increase trial count</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">setting</span><span class="o">.</span><span class="n">current_trial</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="c1"># prepare trial</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">prepare_trial</span><span class="p">()</span>
+    <span class="c1"># start trial</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">start_trial</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>The <cite>before_start</cite>, <cite>store_info_when_start</cite> methods are generally universal and you don’t need to change it. You will
+certainly need to override the <cite>setup_experiment</cite> method, and the <cite>configure_experiment</cite> method is optional. You also
+need to implement <cite>_prepare_trial</cite>, <cite>_start_trial</cite> and <cite>_stop_trial</cite> methods (again, notice that do not override
+<cite>start_trial</cite> and so on).</p>
+<p>Finally, the ExperimentLogic is event-based, so stopping the trial is triggered by an event, which could be generated
+anywhere, as long as you can pass it to the <cite>process_event</cite> method of the ExperimentLogic. In the example experiment
+included (see <cite>FooExperiment</cite> under <strong>Experiments</strong> folder), this is done by the FooDevice: when it generates pre-defined
+amount of data, it calls the <cite>process_event</cite> method of the experiment.</p>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">LabPlatform</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Table of Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Environment.html">Environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GlobalSettings.html">Global configurations for the <cite>labplatform</cite> package</a></li>
+<li class="toctree-l1"><a class="reference internal" href="SubjectManagement.html">Subject management</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="Getting_Started.html">Getting started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Basics.html">Basics about the Logic class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WritingSetting.html">How to write Setting subclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WritingDevice.html">How to write a Device subclass</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">How to write an ExperimentLogic subclass</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Examples/Foo.html">Simple Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Package_content.html">Package organization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Note.html">Note and ToDo list</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Logic.html">Logic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/ExperimentLogic.html">ExperimentLogic</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Device.html">Device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/ExperimentData.html">ExperimentData</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/Setting.html">Setting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/subject.html">subject</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_Core_classes/subject.html#how-to-use-the-subject-class">How to use the subject class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Getting_Started.html">Getting started</a><ul>
+      <li>Previous: <a href="WritingDevice.html" title="previous chapter">How to write a Device subclass</a></li>
+      <li>Next: <a href="Examples/Foo.html" title="next chapter">Simple Examples</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2018, Chao Huang.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/WritingExperimentLogic.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

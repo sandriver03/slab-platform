@@ -1,0 +1,4 @@
+Device
+=======================================
+
+.. autoclass:: labplatform.core.Device.Device

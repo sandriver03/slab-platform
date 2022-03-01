@@ -1,0 +1,24 @@
+Global configurations for the `labplatform` package
+====================================================
+
+Global configurations are managed by the `config` subpackage. The default settings are defined in .config.settings,
+which includes information such as where to located computer- and user- specific settings, where to find the hardware
+related files (e.g. .rcx files for TDT system), subject cohorts information, where to save data, so on and so forth.
+The package will create corresponding dirs to hold relevant information if the dirs do not exist.
+
+To load the settings, simply import the subpackage::
+
+    from labplatform import config
+
+This will first load the defaults, and then load the jason file `{computername}_{user}_{general}.json` in the setting
+file folder, if available. The information in the jason file is used to update the default settings.
+
+You can use the `get_config` to check current settings. To modify a setting, use `set_config`. You can save the modified
+configuration environment to a jason file using `save_env_config`, and load the saved configuration with
+'load_env_config'.
+
+Most time you do not need to modify/save/load configuration files, in this case you only need the `get_config` function.
+Therefore, you can simply do::
+
+    from labplatform.config import get_config
+

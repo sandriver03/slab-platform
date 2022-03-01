@@ -1,0 +1,4 @@
+ExperimentLogic
+=======================================
+
+.. autoclass:: labplatform.core.ExperimentLogic.ExperimentLogic

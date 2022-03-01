@@ -1,0 +1,27 @@
+Note and ToDo list
+=======================================
+
+1). implement a general thread support in Logic
+    - done; seems working
+
+2). change method 'stop' to 'pause' and 'terminate' to 'stop'
+    - done, seems working
+
+3). implement pause in ExperimentLogic so that pause only works when trial is not running
+    - done, not tested
+
+4). implement proper stop method for ExperimentLogic
+    - done, seems working
+
+5). implement general-purpose process_event method in ExperimentLogic
+    - done, seems working
+
+6). implement trial timer and experiment timer to control non-fixed duration experiments
+
+7). testing module
+
+8). currently configure() method cannot be called while logic is running. do we need to change it?
+    - now parameters with context=False can be configured during running
+
+9). the hdf5 file seems prone to corruption. need to find a solution
+    - maybe change the data backend from pytables to h5py
