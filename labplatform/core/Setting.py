@@ -425,14 +425,14 @@ class ExperimentSetting(Setting):
     trial_duration       = CFloat(0, group='primary', dsec='Duration of each trial, (s)', reinit=False)
     inter_trial_interval = CFloat(0, group='primary', dsec='Duration of inter-trial interval, (s)', reinit=False)
 
-    total_duration       = Property(Float(), group='status', depends_on=
+    total_duration       = Property(Float, group='status', depends_on=
                 ['trial_number', 'trial_duration', 'inter_trial_interval'],
                 dsec='Total time of the experiment, (s)')
     start_time           = Instance(datetime.datetime, group='status', dsec='Starting time of the experiment')
     current_trial        = CInt(0, group='status', dsec='Current trial number')
     remain_time          = Instance(datetime.time, group='status', dsec='Remaining time until finish')
 
-    total_trial          = Property(Int(), group='status', depends_on=[''],
+    total_trial          = Property(Int, group='status', depends_on=[''],
                                     dsec='Total number of trials')
 
     operating_mode = Enum('thread', 'normal', group='primary', dsec=

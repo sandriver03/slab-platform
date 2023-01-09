@@ -197,6 +197,8 @@ def set_variable(var_name, value, proc, offset=0):
         proc_name = proc.name
     except AttributeError:
         proc_name = proc.__str__()
+    if offset is None:
+        offset = 0
 
     if isinstance(value, (list, np.ndarray)):
         # this is the same as using WriteTagV
@@ -210,7 +212,7 @@ def set_variable(var_name, value, proc, offset=0):
 
     if flag == 0:
         log.info("Unable to set tag '%s' to value %s on device %s"
-               % (var_name, value, proc_name))
+                 % (var_name, value, proc_name))
 
     return flag
 

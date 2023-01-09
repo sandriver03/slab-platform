@@ -1,6 +1,5 @@
 from labplatform.utilities.RingBuffer import RingBuffer
 from .streamhelpers import all_transfermodes, MonitorSender, MonitorReceiver
-# from ..rpc import ObjectProxy
 from labplatform.utilities.arraytools import make_dtype
 
 import random
@@ -277,6 +276,7 @@ class InputStream(object):
         self.connected = False
         self.N_packet = 0   # number of received packets
         self.latest_packet_N = None  # index of last packet queued in the socket
+        self.latest_received_packet = None  # index of last received packet
         self.Idx_initial_packet = 0  # index of the first packet received by the stream
         self.monitor_socket = None
         self.monitor_receiver = None
@@ -401,6 +401,7 @@ class InputStream(object):
         if self._own_buffer and data is not None and self.buffer is not None:
             self.buffer.write(data, index=index + self.buffer_offset)
         self.N_packet += 1
+        self.latest_received_packet = header[0]
         return index, data, header
 
     def monitor(self, **kwargs):

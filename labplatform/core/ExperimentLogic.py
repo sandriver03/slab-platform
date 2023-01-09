@@ -13,6 +13,7 @@ import datetime
 import os
 import weakref
 from collections import OrderedDict
+from copy import deepcopy
 
 import logging
 
@@ -246,7 +247,7 @@ class ExperimentLogic(Logic):
         """
         devices_outputs = OrderedDict()
         for kv in sorted(self.devices.keys()):
-            devices_outputs[kv] = self.devices[kv]._output_specs.copy()
+            devices_outputs[kv] = deepcopy(self.devices[kv]._output_specs.copy())
             # make sure the field required are complete
             device_name = self.devices[kv].name
             if 'dtype' in devices_outputs[kv].keys():
@@ -257,6 +258,9 @@ class ExperimentLogic(Logic):
                 for on, op in devices_outputs[kv].items():
                     if 'source' not in op.keys():
                         op['source'] = device_name
+                    # if it is a stream, need to update the latest packet count
+                    if 'stream' in op.keys():
+                        op['stream']['N_packet'] = self.devices[kv].output[on].N_packet
         return devices_outputs
 
     def _before_start(self):
