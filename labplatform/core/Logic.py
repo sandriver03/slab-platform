@@ -316,10 +316,11 @@ class Logic(Controller):
         and a dictionary as parameters
         """
         # only allows parameters with reinit=False to be configured while the Logic is running
-        if self.running() and (kwargs.keys() & self.setting.trait_names(reinit=True)):
-            log.warning('Only parameters with reinit=False can be configured while running')
-            raise RuntimeError('Cannot configure {}: {} : the Node is running'.\
-                format(self.setting.category, self.name))
+        if self.running() and (kwargs.keys() & self.setting.trait_names(reinit=True)) \
+                and (kwargs.keys() & self.setting.trait_names(dynamic=False)):
+            log.warning('Only parameters with reinit=False and dynamic=True can be configured while running')
+            raise RuntimeError('Cannot configure {}: {} : the Node is running'
+                               .format(self.setting.category, self.name))
 
         # perform parameter validation here
         paras = self._configure_validation(**kwargs)
@@ -344,7 +345,7 @@ class Logic(Controller):
                                 format(self.setting.category, self.name, key))
 
         # commit changes
-        if self.setting.operating_mode is not 'subprocess' and not _subprocess_mode:
+        if self.setting.operating_mode != 'subprocess' and not _subprocess_mode:
             self.apply()
         else:
             if kwargs['operating_mode'] == 'subprocess':
@@ -459,18 +460,19 @@ class Logic(Controller):
         """
         # special precautions when GUI is used
         if self.info:
-            if self.running() and (set(self._changed_params) & set(self.setting.trait_names(reinit=True))):
-                log.warning('Only parameters with reinit=False can be configured while running')
+            if self.running() and (set(self._changed_params) & set(self.setting.trait_names(reinit=True))) \
+                    and (set(self._changed_params) & set(self.setting.trait_names(dynamic=False))):
+                log.warning('Only parameters with reinit=False and dynamic=True can be configured while running')
                 # revert the parameters back to last commit
                 self.model.setting.copy_values_from(self.setting_shadowcopy)
                 self._changed_params = []
                 self.change_state(pending_changes=False, reinitialize=False)
-                raise ValueError('Cannot configure {}: {} : the Node is running'. \
-                               format(self.setting.category, self.name))
+                raise ValueError('Cannot configure {}: {} : the Node is running'.
+                                 format(self.setting.category, self.name))
 
         if self._pending_changes:
             log.debug('*apply- {}: {}: Applying requested changes'.
-                format(self.setting.category, self.name))
+                      format(self.setting.category, self.name))
             try:
                 self.setting_shadowcopy = self.model.setting.copy_values_to()
                 self.change_state(pending_changes=False)
@@ -491,7 +493,7 @@ class Logic(Controller):
                 log.error(e)
                 if self.info:
                     error(message='Unable to apply the changes. No changes have been made.',
-                        title='Error applying changes')
+                          title='Error applying changes')
 
         # check if parameters are sufficiently configured
         if self.state not in ('Running', 'Paused'):
@@ -509,10 +511,10 @@ class Logic(Controller):
         Note: this method only intended to work with GUI; it does not work with configure() method
         """
         log.debug('{}: {}: Reverting to last applied settings'.
-            format(self.setting.category, self.name))
+                  format(self.setting.category, self.name))
         self.model.setting.copy_values_from(self.setting_shadowcopy)
         # self.pending_changes = False
-        if self.setting.operating_mode is not 'subprocess':
+        if self.setting.operating_mode != 'subprocess':
             self.apply()
         else:
             self._pending_changes = False
@@ -528,8 +530,7 @@ class Logic(Controller):
         """
         if not self._in_subprocess:
             assert not self.running(), \
-                'Cannot reset {}: {}: the Node is running'.\
-                    format(self.setting.category, self.name)
+                'Cannot reset {}: {}: the Node is running'.format(self.setting.category, self.name)
         else:
             if self.running():
                 msg = 'Cannot reset {}: {}: the Node is running'.format(self.setting.category, self.name)
@@ -537,10 +538,9 @@ class Logic(Controller):
                 print(msg)
                 return
 
-        log.info('attempt resetting {} {}...'.
-            format(self.setting.category, self.name))
+        log.info('attempt resetting {} {}...'.format(self.setting.category, self.name))
 
-        if self.setting.operating_mode is not 'subprocess':
+        if self.setting.operating_mode != 'subprocess':
             if not self.stopped():
                 self.stop()
                 time.sleep(0.05)
@@ -556,8 +556,7 @@ class Logic(Controller):
             self._changed_params = []
             self.process_event_loop.put_event(('reset', None))
 
-        log.info('the {} {} was successfully reset'.
-            format(self.setting.category, self.name))
+        log.info('the {} {} was successfully reset'.format(self.setting.category, self.name))
 
     def start(self, info=None):
         """Start the Logic.
@@ -572,19 +571,19 @@ class Logic(Controller):
         if not self._in_subprocess:
             assert not self.stopped(), \
                 'Cannot start {} {} : the Node is stopped. Reinitialize it to start again'.\
-                    format(self.setting.category, self.name)
+                format(self.setting.category, self.name)
             assert self.configured(), \
                 'Cannot start {} {} : the Node is not configured'.\
-                    format(self.setting.category, self.name)
+                format(self.setting.category, self.name)
             assert self.initialized(), \
                 'Cannot start {} {} : the Node is not initialized'.\
-                    format(self.setting.category, self.name)
+                format(self.setting.category, self.name)
             assert not self.running(), \
                 'Cannot start {} {} : the Node is already running'.\
-                    format(self.setting.category, self.name)
+                format(self.setting.category, self.name)
             assert not self._pending_changes, \
                 'Pending changes not applied on {} {}.'.\
-                    format(self.setting.category, self.name)
+                format(self.setting.category, self.name)
         else:
             msg = 'Cannot start {} {} :'.format(self.setting.category, self.name)
             has_error = True
@@ -605,8 +604,7 @@ class Logic(Controller):
                 print(msg)
                 return
 
-        log.info('starting {} {}...'.
-            format(self.setting.category, self.name))
+        log.info('starting {} {}...'.format(self.setting.category, self.name))
 
         # starting in subprocess requires different operations
         if self.setting.operating_mode == 'thread':
@@ -622,8 +620,7 @@ class Logic(Controller):
             raise ValueError('Operating mode {} not known'.format(self.setting.operating_mode))
         self.change_state('Running')
 
-        log.info('{} {} was successfully started'.
-            format(self.setting.category, self.name))
+        log.info('{} {} was successfully started'.format(self.setting.category, self.name))
 
         if self.setting.operating_mode == 'normal':
             self._start()
@@ -650,17 +647,15 @@ class Logic(Controller):
                 print(msg)
                 return
 
-        log.info('pausing {} {}...'.
-            format(self.setting.category, self.name))
+        log.info('pausing {} {}...'.format(self.setting.category, self.name))
 
-        if self.setting.operating_mode is not 'subprocess':
+        if self.setting.operating_mode != 'subprocess':
             self._pause()
         else:
             self.process_event_loop.put_event(('pause', None))
         self.change_state('Paused')
 
-        log.info('{} {} was paused'.
-            format(self.setting.category, self.name))
+        log.info('{} {} was paused'.format(self.setting.category, self.name))
 
     def stop(self, info=None):
         """Stop the Logic.
@@ -671,8 +666,7 @@ class Logic(Controller):
         """
         if not self._in_subprocess:
             assert not self.running(), \
-                'Cannot stop {} {} : the Node is running'.\
-                    format(self.setting.category, self.name)
+                'Cannot stop {} {} : the Node is running'.format(self.setting.category, self.name)
         else:
             if self.running():
                 msg = 'Cannot stop {} {} : the Node is running'.format(self.setting.category, self.name)
@@ -682,10 +676,9 @@ class Logic(Controller):
         if self.stopped():
             return
 
-        log.info('stopping {} {}...'.
-            format(self.setting.category, self.name))
+        log.info('stopping {} {}...'.format(self.setting.category, self.name))
 
-        if self.setting.operating_mode is not 'subprocess':
+        if self.setting.operating_mode != 'subprocess':
             self._stop()
         else:
             self.process_event_loop.put_event(('stop', None))
@@ -701,8 +694,7 @@ class Logic(Controller):
         '''
         self.change_state('Stopped', configured=False, initialized=False, thread_running = False)
 
-        log.info('{} {} was stopped'.
-                 format(self.setting.category, self.name))
+        log.info('{} {} was stopped'.format(self.setting.category, self.name))
 
     '''
         threading support

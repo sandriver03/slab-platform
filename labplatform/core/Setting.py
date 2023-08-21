@@ -15,6 +15,10 @@
         noshow:   bool, if the parameter is displayed in the GUI. by default is True.
         position: tuple, position of the parameter in the GUI. if not provided then use sorted() to get the order.
                   *important* index starts with 1 instead of 0
+        reinit:   bool, if changing this parameter requires re-initialization of the Logic afterwards. If True, the
+                  parameter cannot be changed while the Logic is running
+        dynamic:  bool, a dynamic parameter can be changed in any logic state. by setting this to False, the parameter
+                  cannot be modified when the Logic is running
 """
 
 from labplatform.config import get_config
@@ -74,6 +78,8 @@ class Setting(HasStrictTraits):
                   parameters are automatically given this metadata with value True.
         *reinit*:   bool, used to indicate if the parameter change requires resetting the logic. Primary
                   parameters are automatically given this metadata with value True.
+        *dynamic*:  bool, a dynamic parameter can be changed in any logic state. by setting this to False, the
+                  parameter cannot be modified when the Logic is running
         noshow:   bool, if the parameter is displayed in the GUI. by default is True.
     """
 
@@ -111,10 +117,19 @@ class Setting(HasStrictTraits):
         for key in self._para_list:
             if not self.trait(key).group:
                 self.trait(key).group = 'primary'
-            if self.trait(key).group == 'primary' and 'context' not in self.trait(key).__dict__:
-                self.trait(key).context = True
-            if self.trait(key).group == 'primary' and 'reinit' not in self.trait(key).__dict__:
-                self.trait(key).reinit = True
+            if self.trait(key).group == 'primary':
+                if 'context' not in self.trait(key).__dict__:
+                    self.trait(key).context = True
+                if 'reinit' not in self.trait(key).__dict__:
+                    self.trait(key).reinit = True
+                # for dynamic property, reinit = True -> dynamic = False
+                if self.trait(key).reinit:
+                    self.trait(key).dynamic = False
+                else:
+                    # by default, if a parameter does not require reinit, then it is dynamic
+                    # however, certain parameters, e.g. for the FILR camera, can only be modified when not running
+                    if 'dynamic' not in self.trait(key).__dict__:
+                        self.trait(key).dynamic = True
 
     @classmethod
     def trait_from_dict(cls, trait_name, item):
@@ -420,7 +435,7 @@ class ExperimentSetting(Setting):
 
     # every setting class should have those parameters
     category = 'experiment'
-    experiment_name      = Str('experiment',group='status', dsec='name of the experiment', noshow=True)
+    experiment_name      = Str('experiment', group='status', dsec='name of the experiment', noshow=True)
     trial_number         = CInt(0, group='primary', dsec='Number of trials in each condition', reinit=False)
     trial_duration       = CFloat(0, group='primary', dsec='Duration of each trial, (s)', reinit=False)
     inter_trial_interval = CFloat(0, group='primary', dsec='Duration of inter-trial interval, (s)', reinit=False)

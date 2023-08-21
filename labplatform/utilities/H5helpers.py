@@ -9,7 +9,8 @@ log = logging.getLogger(__name__)
 name_lookup = {'group': 'group',
                'earray': 'earray',
                'array': 'array',
-               'table': 'table'}
+               'table': 'table',
+               'vlarray': 'vlarray', }
 
 
 if sys.version.startswith('3'):

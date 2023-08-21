@@ -273,7 +273,7 @@ class EventManager(Logic):
                  format(self.setting.category, self.name))
 
     def _initialize(self, **kargs):
-        if not self.event_queue and self.setting.operating_mode is not 'subprocess':
+        if not self.event_queue and self.setting.operating_mode != 'subprocess':
             self.event_queue = PriorityQueue()
         else:
             log.info('inter-process communication method is not provided')

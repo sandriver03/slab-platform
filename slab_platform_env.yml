@@ -5,11 +5,10 @@ channels:
 dependencies:
   - python=3.8
   - ipython
-  - request
   - pip
   - traits
   - traitsui
-  - matplotlib=3.3.4
+  - matplotlib
   - scipy
   - numpy
   - pytables

@@ -382,6 +382,7 @@ class ImageViewer(Viewer):
                                         aspect='equal',
                                         cmap='gray')
         self.fig.colorbar(self.artists, ax=self.axes)
+        self.fig.show()
 
     def _check_fig_exist(self):
         return plt.fignum_exists(self.params['fig_name'])
@@ -398,7 +399,13 @@ class ImageViewer(Viewer):
             self.artists.set_cmap(cmap)
             self._new_cmap = None
         self.artists.set_data(self.data[-1])
-        plt.pause(self.params['control_interval'])
+        # TODO: currently it seems this steals the focus
+        # https://stackoverflow.com/questions/44278369/how-to-keep-matplotlib-python-window-in-background
+        # https://stackoverflow.com/questions/45729092/make-interactive-matplotlib-window-not-pop-to-front-on-each-update-windows-7
+        # plt.pause(self.params['control_interval'])
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+        time.sleep(self.params['control_interval'])
 
     def _reset_fig(self):
         pass
@@ -474,6 +481,7 @@ class DataViewer(Viewer):
         if not self.data:
             self._create_data_buffer()
         self.artists = self.axes.plot(self.x, self.data[:])
+        self.fig.show()
 
     def _check_fig_exist(self):
         return plt.fignum_exists(self.params['fig_name'])
@@ -482,7 +490,10 @@ class DataViewer(Viewer):
         for i, p in enumerate(self.artists):
             # p.set_data(self_obj.x, self_obj.data[:, i])
             p.set_ydata(self.data[:, i])
-        plt.pause(self.params['control_interval'])
+        # plt.pause(self.params['control_interval'])
+        self.fig.canvas.draw_idle()
+        self.fig.canvas.flush_events()
+        time.sleep(self.params['control_interval'])
 
     def _reset_fig(self):
         self.data.write(np.zeros(self.data.shape))
