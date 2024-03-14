@@ -34,6 +34,8 @@ the downloaded file is located, and then create an environment with the file:
     pip install git+https://github.com/sandriver03/slab-platform.git
    ```
 
+4. (optional) The speakers module requires slab tool (https://github.com/DrMarc/slab/)
+
 
 ## Core ideas and classes
 
@@ -121,7 +123,6 @@ See \build\html\index.html
 
 12). logging across thread/multiprocess
 
-13). `Speaker` in the `utilities` need to be overhauled; integrate it with `SpeakerCalibration_config` in the `config` 
-module
+13). does the speakers module belongs here, or make it a separate package?
 
 14). work on and test the GUI version of everything

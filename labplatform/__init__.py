@@ -5,3 +5,4 @@ import labplatform.core
 import labplatform.stream
 import labplatform.GUI
 import labplatform.utilities
+import labplatform.speakers
