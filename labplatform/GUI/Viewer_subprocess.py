@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 default_params = dict(
     data_shape=(-1, 1),
-    data_type=np.float,
+    data_type=float,
     buffer_length=10,
     display_length=5,
     control_interval=0.1,
