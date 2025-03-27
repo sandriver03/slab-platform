@@ -345,7 +345,7 @@ class Processors(object):
             flags.append(set_variable(tag, value, proc, offset))
         return flags
 
-    def read(self, tag, proc, n_samples=1, start_idx=0, dtype=np.float):
+    def read(self, tag, proc, n_samples=1, start_idx=0, dtype=np.float32):
         """
         Read data from processor.
         Get the value of a tag from a processor. The number of samples to read
