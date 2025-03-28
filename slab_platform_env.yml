@@ -18,5 +18,6 @@ dependencies:
   - pywin32
   - pip:
     - screeninfo
+    - slab
 
 
